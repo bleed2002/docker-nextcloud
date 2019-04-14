@@ -3,7 +3,7 @@ FROM wonderfall/nginx-php:7.2
 ARG NEXTCLOUD_VERSION=15.0.5
 ARG GPG_nextcloud="2880 6A87 8AE4 23A2 8372  792E D758 99B9 A724 937A"
 
-ENV UID=991 GID=991 \
+ENV UID=1000 GID=1000 \
     UPLOAD_MAX_SIZE=10G \
     APC_SHM_SIZE=128M \
     OPCACHE_MEM_SIZE=128 \
@@ -58,6 +58,7 @@ RUN apk -U upgrade \
 
 COPY rootfs /
 
+RUN chown -R $UID:$GID /nextcloud /var/log /php /nginx /tmp /etc/s6.d
 RUN chmod +x /usr/local/bin/* /etc/s6.d/*/* /etc/s6.d/.s6-svscan/*
 
 VOLUME /data /config /apps2 /nextcloud/themes
