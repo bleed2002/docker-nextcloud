@@ -29,5 +29,4 @@ pipelines:
           - docker build -f Dockerfile.15.0 -t "$IMAGE_NAME:v15" .
           - docker tag "$IMAGE_NAME:v15" "$IMAGE_NAME:latest"
           - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
-          - docker push "$IMAGE_NAME:v15" 
-          - docker push "$IMAGE_NAME:latest"
+          - docker push "$IMAGE_NAME:v15"
