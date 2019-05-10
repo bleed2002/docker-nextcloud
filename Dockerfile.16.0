@@ -1,6 +1,6 @@
 FROM wonderfall/nginx-php:7.2
 
-ARG NEXTCLOUD_VERSION=14.0.10
+ARG NEXTCLOUD_VERSION=16.0.0
 ARG GPG_nextcloud="2880 6A87 8AE4 23A2 8372  792E D758 99B9 A724 937A"
 
 ENV UID=1000 GID=1000 \
@@ -25,16 +25,19 @@ RUN apk -U upgrade \
     libtool \
     samba-dev \
  && apk add \
+    imagemagick-dev \
     libressl \
     ca-certificates \
     libsmbclient \
     tzdata \
  && pecl install \
+    imagick \
     smbclient \
     apcu \
     redis \
  && echo "extension=smbclient.so" > /php/conf.d/smbclient.ini \
  && echo "extension=redis.so" > /php/conf.d/redis.ini \
+ && echo "extension=imagick.so" > /php/conf.d/imagick.ini \
  && mkdir /nextcloud \
  && cd /tmp \
  && NEXTCLOUD_TARBALL="nextcloud-${NEXTCLOUD_VERSION}.tar.bz2" \

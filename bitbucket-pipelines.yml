@@ -30,3 +30,11 @@ pipelines:
           - docker tag "$IMAGE_NAME:v15" "$IMAGE_NAME:latest"
           - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
           - docker push "$IMAGE_NAME:v15"
+
+          # Build nextcloud v16
+          # authenticate with the Docker Hub registry
+          # push the new Docker image to the Docker registry
+          - docker build -f Dockerfile.16.0 -t "$IMAGE_NAME:v16" .
+          - docker tag "$IMAGE_NAME:v16" "$IMAGE_NAME:latest"
+          - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
+          - docker push "$IMAGE_NAME:v16"
