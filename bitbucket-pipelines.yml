@@ -19,17 +19,17 @@ pipelines:
           # Build nextcloud v14
           # authenticate with the Docker Hub registry
           # push the new Docker image to the Docker registry
-          - docker build -f Dockerfile.14.0 -t "$IMAGE_NAME:v14" .
-          - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
-          - docker push "$IMAGE_NAME:v14"
+          #- docker build -f Dockerfile.14.0 -t "$IMAGE_NAME:v14" .
+          #- docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
+          #- docker push "$IMAGE_NAME:v14"
           
           # Build nextcloud v15
           # authenticate with the Docker Hub registry
           # push the new Docker image to the Docker registry
-          - docker build -f Dockerfile.15.0 -t "$IMAGE_NAME:v15" .
-          - docker tag "$IMAGE_NAME:v15" "$IMAGE_NAME:latest"
-          - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
-          - docker push "$IMAGE_NAME:v15"
+          #- docker build -f Dockerfile.15.0 -t "$IMAGE_NAME:v15" .
+          #- docker tag "$IMAGE_NAME:v15" "$IMAGE_NAME:latest"
+          #- docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
+          #- docker push "$IMAGE_NAME:v15"
 
           # Build nextcloud v16
           # authenticate with the Docker Hub registry
