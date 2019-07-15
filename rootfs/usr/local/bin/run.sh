@@ -41,6 +41,8 @@ else
 
     # Convert filecache fields
     occ db:convert-filecache-bigint
+
+    echo "Done running upgrade scripts! Now starting up nextcloud..."
 fi
 
 exec su-exec $UID:$GID /bin/s6-svscan /etc/s6.d
