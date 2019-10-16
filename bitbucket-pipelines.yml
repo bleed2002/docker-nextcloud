@@ -1,8 +1,6 @@
-# This is a sample build configuration for Docker.
-# Check our guides at https://confluence.atlassian.com/x/O1toN for more examples.
-# Only use spaces to indent your .yml configuration.
-# -----
-# You can specify a custom docker image from Docker Hub as your build environment.
+#
+# Build nextcloud docker images
+#
 image: atlassian/default-image:2
 
 pipelines:
@@ -11,30 +9,31 @@ pipelines:
         services:
           - docker
         script: 
-          # Modify the commands below to build your repository.
-          # Set $DOCKER_HUB_USERNAME and $DOCKER_HUB_PASSWORD 
-          # as environment variables in repository settings
+          # Set $DOCKER_HUB_USERNAME and $DOCKER_HUB_PASSWORD as environment variables in repository settings
           - export "IMAGE_NAME=bleed2002/nextcloud"
 
+          # Build nextcloud v12
+          - docker build -f Dockerfile.12.0 -t "$IMAGE_NAME:v12" .
+          - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
+          - docker push "$IMAGE_NAME:v12"
+
+          # Build nextcloud v13
+          - docker build -f Dockerfile.13.0 -t "$IMAGE_NAME:v13" .
+          - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
+          - docker push "$IMAGE_NAME:v13"
+
           # Build nextcloud v14
-          # authenticate with the Docker Hub registry
-          # push the new Docker image to the Docker registry
           #- docker build -f Dockerfile.14.0 -t "$IMAGE_NAME:v14" .
           #- docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
           #- docker push "$IMAGE_NAME:v14"
           
           # Build nextcloud v15
-          # authenticate with the Docker Hub registry
-          # push the new Docker image to the Docker registry
           #- docker build -f Dockerfile.15.0 -t "$IMAGE_NAME:v15" .
-          #- docker tag "$IMAGE_NAME:v15" "$IMAGE_NAME:latest"
           #- docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
           #- docker push "$IMAGE_NAME:v15"
 
           # Build nextcloud v16
-          # authenticate with the Docker Hub registry
-          # push the new Docker image to the Docker registry
-          - docker build -f Dockerfile.16.0 -t "$IMAGE_NAME:v16" .
-          - docker tag "$IMAGE_NAME:v16" "$IMAGE_NAME:latest"
-          - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
-          - docker push "$IMAGE_NAME:v16"
+          #- docker build -f Dockerfile.16.0 -t "$IMAGE_NAME:v16" .
+          #- docker tag "$IMAGE_NAME:v16" "$IMAGE_NAME:latest"
+          #- docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
+          #- docker push "$IMAGE_NAME:v16"
