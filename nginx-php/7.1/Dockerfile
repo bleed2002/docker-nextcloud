@@ -1,9 +1,9 @@
-FROM alpine:3.7
+FROM alpine:3.9
 
 ARG BUILD_CORES
 
-ARG NGINX_VER=1.13.9
-ARG PHP_VER=7.1.15
+ARG NGINX_VER=1.15.9
+ARG PHP_VER=7.1.32
 ARG LIBICONV_VERSION=1.15
 
 LABEL description="nginx + php image based on Alpine" \
@@ -11,7 +11,7 @@ LABEL description="nginx + php image based on Alpine" \
       php_version="PHP v$PHP_VER built from source" \
       nginx_version="nginx v$NGINX_VER built from source"
 
-ARG PHP_MIRROR=http://ch1.php.net
+ARG PHP_MIRROR=https://ch1.php.net
 
 ARG NGINX_CONF=" \
     --prefix=/nginx \
@@ -80,7 +80,6 @@ ARG PHP_EXT_LIST=" \
     fileinfo \
     bz2 \
     intl \
-    mcrypt \
     openssl \
     ldap \
     simplexml \
@@ -94,7 +93,6 @@ ARG CUSTOM_BUILD_PKGS=" \
     freetype-dev \
     openldap-dev \
     gmp-dev \
-    libmcrypt-dev \
     icu-dev \
     postgresql-dev \
     libpng-dev \
@@ -104,7 +102,7 @@ ARG CUSTOM_BUILD_PKGS=" \
     libxpm-dev \
     libedit-dev \
     libxml2-dev \
-    libressl-dev \
+    openssl-dev \
     libbz2 \
     sqlite-dev \
     imap-dev"
@@ -113,7 +111,6 @@ ARG CUSTOM_PKGS=" \
     freetype \
     openldap \
     gmp \
-    libmcrypt \
     bzip2-dev \
     icu \
     libpq \
@@ -148,7 +145,7 @@ RUN NB_CORES=${BUILD_CORES-$(getconf _NPROCESSORS_CONF)} \
     curl \
     libedit \
     libxml2 \
-    libressl \
+    openssl \
     libwebp \
     gd \
     pcre \
