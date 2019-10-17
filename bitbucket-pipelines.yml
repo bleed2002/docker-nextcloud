@@ -13,20 +13,10 @@ pipelines:
           # Set $DOCKER_HUB_USERNAME and $DOCKER_HUB_PASSWORD as environment variables in repository settings
           - export "IMAGE_NAME=bleed2002/nextcloud"
 
-          # Build nginx-php:7.1
-          - docker build -f nginx-php/7.1/Dockerfile -t "bleed2002/nginx-php:7.1" .
-          - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
-          - docker push "bleed2002/nginx-php:7.1"
-
-          # Build nextcloud v12
-          #- docker build -f Dockerfile.12.0 -t "$IMAGE_NAME:v12" .
-          #- docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
-          #- docker push "$IMAGE_NAME:v12"
-
           # Build nextcloud v13
-          #- docker build -f Dockerfile.13.0 -t "$IMAGE_NAME:v13" .
-          #- docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
-          #- docker push "$IMAGE_NAME:v13"
+          - docker build -f Dockerfile.13.0 -t "$IMAGE_NAME:v13" .
+          - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
+          - docker push "$IMAGE_NAME:v13"
 
           # Build nextcloud v14
           #- docker build -f Dockerfile.14.0 -t "$IMAGE_NAME:v14" .
