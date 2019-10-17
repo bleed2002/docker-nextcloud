@@ -14,14 +14,14 @@ pipelines:
           - export "IMAGE_NAME=bleed2002/nextcloud"
 
           # Build nextcloud v13
-          - docker build -f Dockerfile.13.0 -t "$IMAGE_NAME:v13" .
-          - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
-          - docker push "$IMAGE_NAME:v13"
+          #- docker build -f Dockerfile.13.0 -t "$IMAGE_NAME:v13" .
+          #- docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
+          #- docker push "$IMAGE_NAME:v13"
 
           # Build nextcloud v14
-          #- docker build -f Dockerfile.14.0 -t "$IMAGE_NAME:v14" .
-          #- docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
-          #- docker push "$IMAGE_NAME:v14"
+          - docker build -f Dockerfile.14.0 -t "$IMAGE_NAME:v14" .
+          - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
+          - docker push "$IMAGE_NAME:v14"
           
           # Build nextcloud v15
           #- docker build -f Dockerfile.15.0 -t "$IMAGE_NAME:v15" .
