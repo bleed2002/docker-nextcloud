@@ -19,9 +19,9 @@ pipelines:
           #- docker push "$IMAGE_NAME:v13"
 
           # Build nextcloud v14
-          - docker build -f Dockerfile.14.0 -t "$IMAGE_NAME:v14" .
-          - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
-          - docker push "$IMAGE_NAME:v14"
+          #- docker build -f Dockerfile.14.0 -t "$IMAGE_NAME:v14" .
+          #- docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
+          #- docker push "$IMAGE_NAME:v14"
           
           # Build nextcloud v15
           #- docker build -f Dockerfile.15.0 -t "$IMAGE_NAME:v15" .
@@ -29,7 +29,13 @@ pipelines:
           #- docker push "$IMAGE_NAME:v15"
 
           # Build nextcloud v16
-          #- docker build -f Dockerfile.16.0 -t "$IMAGE_NAME:v16" .
-          #- docker tag "$IMAGE_NAME:v16" "$IMAGE_NAME:latest"
-          #- docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
-          #- docker push "$IMAGE_NAME:v16"
+          - docker build -f Dockerfile.16.0 -t "$IMAGE_NAME:v16" .
+          - docker tag "$IMAGE_NAME:v16" "$IMAGE_NAME:latest"
+          - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
+          - docker push "$IMAGE_NAME:v16"
+
+          # Build nextcloud v17
+          - docker build -f Dockerfile.16.0 -t "$IMAGE_NAME:v16" .
+          - docker tag "$IMAGE_NAME:v16" "$IMAGE_NAME:latest"
+          - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
+          - docker push "$IMAGE_NAME:v16"
