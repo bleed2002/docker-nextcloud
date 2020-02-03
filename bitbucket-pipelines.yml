@@ -9,7 +9,7 @@ pipelines:
         size: 2x
         services:
           - docker
-        script: 
+        script:
           # Set $DOCKER_HUB_USERNAME and $DOCKER_HUB_PASSWORD as environment variables in repository settings
           - export "IMAGE_NAME=bleed2002/nextcloud"
 
@@ -22,7 +22,7 @@ pipelines:
           #- docker build -f Dockerfile.14.0 -t "$IMAGE_NAME:v14" .
           #- docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
           #- docker push "$IMAGE_NAME:v14"
-          
+
           # Build nextcloud v15
           #- docker build -f Dockerfile.15.0 -t "$IMAGE_NAME:v15" .
           #- docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
@@ -30,12 +30,16 @@ pipelines:
 
           # Build nextcloud v16
           #- docker build -f Dockerfile.16.0 -t "$IMAGE_NAME:v16" .
-          #- docker tag "$IMAGE_NAME:v16" "$IMAGE_NAME:latest"
           #- docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
           #- docker push "$IMAGE_NAME:v16"
 
           # Build nextcloud v17
           - docker build -f Dockerfile.17.0 -t "$IMAGE_NAME:v17" .
-          - docker tag "$IMAGE_NAME:v17" "$IMAGE_NAME:latest"
           - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
           - docker push "$IMAGE_NAME:v17"
+
+          # Build nextcloud v18
+          - docker build -f Dockerfile.18.0 -t "$IMAGE_NAME:v18" .
+          - docker tag "$IMAGE_NAME:v18" "$IMAGE_NAME:latest"
+          - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
+          - docker push "$IMAGE_NAME:v18"
