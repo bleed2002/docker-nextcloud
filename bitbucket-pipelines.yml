@@ -34,9 +34,9 @@ pipelines:
           #- docker push "$IMAGE_NAME:v16"
 
           # Build nextcloud v17
-          - docker build -f Dockerfile.17.0 -t "$IMAGE_NAME:v17" .
-          - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
-          - docker push "$IMAGE_NAME:v17"
+          #- docker build -f Dockerfile.17.0 -t "$IMAGE_NAME:v17" .
+          #- docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
+          #- docker push "$IMAGE_NAME:v17"
 
           # Build nextcloud v18
           - docker build -f Dockerfile.18.0 -t "$IMAGE_NAME:v18" .
