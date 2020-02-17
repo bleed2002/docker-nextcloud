@@ -1,0 +1,21 @@
+# Build using gitlab CI and push to gitlab container registry
+docker-build-master:
+    # Official docker image.
+    image: docker:latest
+    stage: build
+    services:
+        - docker:dind
+    variables:
+        IMAGE_NAME: nextcloud
+        IMAGE_PATH: ${CI_REGISTRY}/bleed2002/docker-nextcloud/${IMAGE_NAME}
+    before_script:
+    script:
+        # Login to registry
+        - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+        # Build + tag nextcloud v18
+        - docker build -f Dockerfile.18.0 -t "$IMAGE_PATH:v18" .
+        - docker tag "$IMAGE_PATH:v18" "$IMAGE_PATH:latest"
+        # Push to registry
+        - docker push "$IMAGE_PATH:v18"
+    only:
+        - master
