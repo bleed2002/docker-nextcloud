@@ -40,6 +40,11 @@ pipelines:
 
           # Build nextcloud v18
           - docker build -f Dockerfile.18.0 -t "$IMAGE_NAME:v18" .
-          - docker tag "$IMAGE_NAME:v18" "$IMAGE_NAME:latest"
           - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
           - docker push "$IMAGE_NAME:v18"
+
+          # Build nextcloud v19
+          - docker build -f Dockerfile.19.0 -t "$IMAGE_NAME:v19" .
+          - docker tag "$IMAGE_NAME:v19" "$IMAGE_NAME:latest"
+          - docker login --username "$DOCKER_HUB_USERNAME" --password "$DOCKER_HUB_PASSWORD"
+          - docker push "$IMAGE_NAME:v19"
