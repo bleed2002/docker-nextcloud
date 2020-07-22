@@ -36,13 +36,19 @@ else
     # Run upgrade if applicable
     occ upgrade
 
+		# Add missing columns
+		occ db:add-missing-columns
+
     # Add missing indexes
     occ db:add-missing-indices
 
     # Convert filecache fields
     occ db:convert-filecache-bigint
 
-    echo "Done running upgrade scripts! Now starting up nextcloud..."
+		# Add missing columns
+    occ db:add-missing-columns
+
+    echo "\nDone running upgrade scripts! Now starting up nextcloud...\n"
 fi
 
 exec su-exec $UID:$GID /bin/s6-svscan /etc/s6.d
