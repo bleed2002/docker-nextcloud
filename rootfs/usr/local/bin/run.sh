@@ -35,7 +35,7 @@ if [ ! -f /config/config.php ]; then
 else
     # Run upgrade if applicable
     echo "Running occ upgrade..."
-    occ upgrade -v
+    occ upgrade -vv
     echo "occ upgrade finished."
 
 		# Add missing columns
