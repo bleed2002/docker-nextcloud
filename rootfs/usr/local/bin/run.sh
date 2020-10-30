@@ -34,21 +34,33 @@ if [ ! -f /config/config.php ]; then
     /usr/local/bin/setup.sh
 else
     # Run upgrade if applicable
-    occ upgrade
+    echo "Running occ upgrade..."
+    occ upgrade -v
+    echo "occ upgrade finished."
 
 		# Add missing columns
+		echo "Running occ db:add-missing-columns..."
 		occ db:add-missing-columns
+		echo "occ db:add-missing-columns finished."
 
     # Add missing indexes
+    echo "Running occ db:add-missing-indices ..."
     occ db:add-missing-indices
+    echo "occ db:add-missing-indices finished."
 
     # Convert filecache fields
+    echo "Running occ db:convert-filecache-bigint..."
     occ db:convert-filecache-bigint
+    echo "occ db:convert-filecache-bigint finished."
 
 		# Add missing columns
+		echo "Running occ db:add-missing-columns..."
     occ db:add-missing-columns
+    echo "occ db:add-missing-columns finished."
 
-    echo "\nDone running upgrade scripts! Now starting up nextcloud...\n"
+		echo ""
+    echo "Done running upgrade scripts! Now starting up nextcloud..."
+    echo ""
 fi
 
 exec su-exec $UID:$GID /bin/s6-svscan /etc/s6.d
