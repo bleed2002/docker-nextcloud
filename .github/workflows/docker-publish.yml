@@ -1,0 +1,36 @@
+name: Docker
+
+on:
+  push:
+    # Publish `master` as Docker `latest` image.
+    branches:
+      - master
+
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+
+env:
+  # TODO: Change variable to your image's name.
+  IMAGE_NAME: bleed2002/nextcloud
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      # Build nextcloud v19
+      - name: Build nextcloud v19 image
+        run: |
+          docker build -f Dockerfile.19.0 -t "$IMAGE_NAME:v19" .
+          docker login --username "${{ secrets.DOCKER_HUB_USERNAME }}" --password "${{ secrets.DOCKER_HUB_PASSWORD }}"
+          docker push "$IMAGE_NAME:v19"
+        
+      # Build nextcloud v20
+      - name: Build nextcloud v20 image
+        run: |
+          docker build -f Dockerfile.20.0 -t "$IMAGE_NAME:v20" .
+          docker tag "$IMAGE_NAME:v20" "$IMAGE_NAME:latest"
+          docker login --username "${{ secrets.DOCKER_HUB_USERNAME }}" --password "${{ secrets.DOCKER_HUB_PASSWORD }}"
+          docker push "$IMAGE_NAME:v20"
