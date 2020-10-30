@@ -42,7 +42,8 @@ RUN apk -U upgrade \
  && mkdir /nextcloud \
  && cd /tmp \
  && NEXTCLOUD_TARBALL="nextcloud-${NEXTCLOUD_VERSION}.tar.bz2" \
- && wget -q https://download.nextcloud.com/server/releases/${NEXTCLOUD_TARBALL} \
+ && echo "Downloading nextcloud: https://download.nextcloud.com/server/releases/${NEXTCLOUD_TARBALL} ..." \
+ && wget https://download.nextcloud.com/server/releases/${NEXTCLOUD_TARBALL} \
  && wget -q https://download.nextcloud.com/server/releases/${NEXTCLOUD_TARBALL}.sha512 \
  && wget -q https://download.nextcloud.com/server/releases/${NEXTCLOUD_TARBALL}.asc \
  && wget -q https://nextcloud.com/nextcloud.asc \

@@ -8,7 +8,7 @@ ENV UID=1000 GID=1000 \
     APC_SHM_SIZE=128M \
     OPCACHE_MEM_SIZE=128 \
     MEMORY_LIMIT=512M \
-    CRON_PERIOD=15m \
+    CRON_PERIOD=5m \
     CRON_MEMORY_LIMIT=1g \
     TZ=Etc/UTC \
     DB_TYPE=sqlite3 \
@@ -31,6 +31,7 @@ RUN apk -U upgrade \
     libsmbclient \
     tzdata \
     imagemagick \
+    ffmpeg \
  && pecl install \
     smbclient \
     apcu \
@@ -42,7 +43,8 @@ RUN apk -U upgrade \
  && mkdir /nextcloud \
  && cd /tmp \
  && NEXTCLOUD_TARBALL="nextcloud-${NEXTCLOUD_VERSION}.tar.bz2" \
- && wget -q https://download.nextcloud.com/server/releases/${NEXTCLOUD_TARBALL} \
+ && echo "Downloading nextcloud: https://download.nextcloud.com/server/releases/${NEXTCLOUD_TARBALL} ..." \
+ && wget https://download.nextcloud.com/server/releases/${NEXTCLOUD_TARBALL} \
  && wget -q https://download.nextcloud.com/server/releases/${NEXTCLOUD_TARBALL}.sha512 \
  && wget -q https://download.nextcloud.com/server/releases/${NEXTCLOUD_TARBALL}.asc \
  && wget -q https://nextcloud.com/nextcloud.asc \
