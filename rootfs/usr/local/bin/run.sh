@@ -59,15 +59,20 @@ else
     occ db:add-missing-indices
     echo "occ db:add-missing-indices finished."
 
-    # Convert filecache fields
-    echo "Running occ db:convert-filecache-bigint..."
-    occ db:convert-filecache-bigint
-    echo "occ db:convert-filecache-bigint finished."
-
 		# Add missing columns
 		echo "Running occ db:add-missing-columns..."
     occ db:add-missing-columns
     echo "occ db:add-missing-columns finished."
+
+		# Add missing primary keys
+		echo "Running occ db:add-missing-primary-keys..."
+    occ db:add-missing-primary-keys
+    echo "occ db:db:add-missing-primary-keys finished."
+
+    # Convert filecache fields
+    echo "Running occ db:convert-filecache-bigint..."
+    occ db:convert-filecache-bigint
+    echo "occ db:convert-filecache-bigint finished."
 
 		echo ""
     echo "Done running upgrade scripts! Now starting up nextcloud..."
