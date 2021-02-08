@@ -14,12 +14,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Build nextcloud v19
-      - name: Build nextcloud v19 image
-        run: |
-          docker build -f Dockerfile.19.0 -t "$IMAGE_NAME:v19" .
-          docker login --username "${{ secrets.DOCKER_HUB_USERNAME }}" --password "${{ secrets.DOCKER_HUB_PASSWORD }}"
-          docker push "$IMAGE_NAME:v19"
+#     # Build nextcloud v19
+#      - name: Build nextcloud v19 image
+#        run: |
+#          docker build -f Dockerfile.19.0 -t "$IMAGE_NAME:v19" .
+#          docker login --username "${{ secrets.DOCKER_HUB_USERNAME }}" --password "${{ secrets.DOCKER_HUB_PASSWORD }}"
+#          docker push "$IMAGE_NAME:v19"
 
       # Build nextcloud v20
       - name: Build nextcloud v20 image
