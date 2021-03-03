@@ -69,11 +69,6 @@ else
     occ db:add-missing-primary-keys
     echo "occ db:db:add-missing-primary-keys finished."
 
-    # Convert filecache fields
-    echo "Running occ db:convert-filecache-bigint..."
-    occ db:convert-filecache-bigint
-    echo "occ db:convert-filecache-bigint finished."
-
 		echo ""
     echo "Done running upgrade scripts! Now starting up nextcloud..."
     echo ""
