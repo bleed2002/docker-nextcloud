@@ -16,13 +16,18 @@
 - MySQL, PostgreSQL (server not built-in) and sqlite3 support.
 - Redis, FTP, SMB, LDAP, IMAP support.
 - GNU Libiconv for php iconv extension (avoiding errors with some apps).
-- No root processes. Never.
+- No **running** root processes **except on start** (reducing privileges afterwards).
 - Environment variables provided (see below).
+
+### Security
+As many images from the time it was first made, this image follows the principle of degrading privileges. It runs first as root to ensure permissions are set correctly and then only makes use of the UID/GID of your choice. While I agree it's not perfect (due to Linux insecurity), it seemed the best security/comfort balance at the time and it'll remain so for a while.
 
 ### Tags
 - **latest** : latest stable version.
-- **18.0** : latest 18.0.x version (stable)
-- **17.0** : latest 17.0.x version (oldstable)
+- **21.0** : latest 21.0.x version (stable, recommended)
+- **20.0** : latest 20.0.x version (old stable)
+
+Since this project should suit my needs, I'll only maintain the latest stable version available.
 
 ### Build-time variables
 - **NEXTCLOUD_VERSION** : version of nextcloud

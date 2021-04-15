@@ -17,7 +17,14 @@ jobs:
       # Build nextcloud v20
       - name: Build nextcloud v20 image
         run: |
-          docker build -f Dockerfile.20.0 -t "$IMAGE_NAME:v20" .
-          docker tag "$IMAGE_NAME:v20" "$IMAGE_NAME:latest"
+          docker build -f Dockerfile.20 -t "$IMAGE_NAME:v20" .
           docker login --username "${{ secrets.DOCKER_HUB_USERNAME }}" --password "${{ secrets.DOCKER_HUB_PASSWORD }}"
           docker push "$IMAGE_NAME:v20"
+
+      # Build nextcloud v21
+      - name: Build nextcloud v21 image
+        run: |
+            docker build -f Dockerfile.21 -t "$IMAGE_NAME:v21" .
+            docker tag "$IMAGE_NAME:v21" "$IMAGE_NAME:latest"
+            docker login --username "${{ secrets.DOCKER_HUB_USERNAME }}" --password "${{ secrets.DOCKER_HUB_PASSWORD }}"
+            docker push "$IMAGE_NAME:v21"
