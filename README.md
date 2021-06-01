@@ -1,194 +1,99 @@
-## wonderfall/nextcloud
+# wonderfall/nextcloud
+*The self-hosted productivity platform that keeps you in control.*
+
+Nextcloud [official website](https://nextcloud.com/) and [source code](https://github.com/nextcloud).
+
+## Why this image?
+This non-official image is intended as an **all-in-one** (as in monolithic) Nextcloud **production** image. If you're not sure you want this image, you should probably use [the official image](https://hub.docker.com/r/nextcloud).
+
+## Security
+Don't run random images from random dudes on the Internet. Ideally, you want to maintain and build it yourself.
+
+Images are scanned every day by [Trivy](https://github.com/aquasecurity/trivy) for OS vulnerabilities. They are rebuilt once a week, so you should often update your images regardless of your Nextcloud version.
+
+## Features
+- Fetching PHP/nginx from their official images.
+- Does not use any privilege at any time, even at startup.
+- Much easier to maintain thanks to multi-stages build.
+- Includes hardened_malloc, a hardened memory allocator.
+- Does not include imagick, samba, etc. by default.
+
+## Tags
+- `latest` : latest Nextcloud version
+- `x` : latest Nextcloud x.x (e.g. `21`)
+- `x.x.x` : Nextcloud x.x.x (e.g. `21.0.2`)
+
+You can always have a glance [here](https://github.com/users/Wonderfall/packages/container/package/nextcloud).
+Only the **latest stable version** will be maintained by myself.
+
+## Build-time variables
+|          Variable           |         Description        |
+| --------------------------- | -------------------------- |
+| **NEXTCLOUD_VERSION**       | version of Nextcloud       |
+| **ALPINE_VERSION**          | version of Alpine Linux    |
+| **PHP_VERSION**             | version of PHP             |
+| **NGINX_VERSION**           | version of nginx           |
+| **APCU_VERSION**            | version of APCu (php ext)  |
+| **REDIS_VERSION**           | version of redis (php ext) |
+| **HARDENED_MALLOC_VERSION** | version of hardened_malloc |
+| **UID**                     | user id (default: 1000)    |
+| **GID**                     | group id (default: 1000)   |
+
+For convenience they were put at the very of the Dockerfile and their usage should be quite explicit if you intend to build this image yourself.
+
+## Environment variables (Dockerfile)
+
+|          Variable         |         Description         |       Default      |
+| ------------------------- | --------------------------- | ------------------ |
+|     **UPLOAD_MAX_SIZE**   | file upload maximum size    |         10G        |
+|      **APC_SHM_SIZE**     | apc shared memory size      |         128M       |
+|      **MEMORY_LIMIT**     | max php command mem usage   |         512M       |
+|       **CRON_PERIOD**     | cron time interval (min.)   |         5m         |
+|   **CRON_MEMORY_LIMIT**   | cron max memory usage       |         1G         |
+|         **DB_TYPE**       | sqlite3, mysql, pgsql       |       sqlite3      |
+|         **DOMAIN**        | host domain                 |       localhost    |
+
+Leave them at default if you're not sure what you're doing.
+
+## Environment variables (used by setup.sh)
+
+|          Variable         |         Description         |
+| ------------------------- | --------------------------- |
+|        **ADMIN_USER**     | admin username              |
+|      **ADMIN_PASSWORD**   | admin password              |
+|         **DB_TYPE**       | sqlit3, mysql, pgsql        |
+|         **DB_NAME**       | name of the database        |
+|         **DB_USER**       | name of the database user   |
+|       **DB_PASSWORD**     | password of the db user     |
+|         **DB_HOST**       | database host               |
+
+`ADMIN_USER` and `ADMIN_PASSWORD` are optional and mainly for niche purposes. Obviously, avoid clear text passwords. Once `setup.sh` has run for the first time, these variables can be removed. You should then edit `/nextcloud/config/config.php` directly if you want to change something in your configuration.
+
+## Volumes
+|          Variable            |         Description        |
+| -------------------------    | -------------------------- |
+| **/data**                    |         data files         |
+| **/nextcloud/config**        |        config files        |
+| **/nextcloud/apps2**         |       3rd-party apps       |
+| **/nextcloud/themes**        |        custom themes       |
+
+## Ports
+|              Port            |            Use             |
+| -------------------------    | -------------------------- |
+| **8888**                     |       Nextcloud web        |
 
 
-[![](https://images.microbadger.com/badges/version/wonderfall/nextcloud.svg)](http://microbadger.com/images/wonderfall/nextcloud "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/image/wonderfall/nextcloud.svg)](http://microbadger.com/images/wonderfall/nextcloud "Get your own image badge on microbadger.com")
+A reverse proxy like Traefik/Caddy should be used.
 
-**Made for my own use. Irregular updates! This image is eventually intended as a base for your own Docker image. I cannot be responsible if you're using outdated Docker images.**
+## Migration from the legacy image
+From now on you'll need to make sure all volumes have proper permissions. The default UID/GID is now 1000, so you'll need to build the image yourself if you want to change that, or you can just change the actual permissions of the volumes using `chown -R 1000:1000`. The flexibility provided by the legacy image came at some cost (performance & security), therefore this feature won't be provided anymore.
 
-### Features
-- Based on Alpine Linux.
-- Bundled with nginx and PHP 7.x (wonderfall/nginx-php image).
-- Automatic installation using environment variables.
-- Package integrity (SHA512) and authenticity (PGP) checked during building process.
-- Data and apps persistence.
-- OPCache (opcocde), APCu (local) installed and configured.
-- system cron task running.
-- MySQL, PostgreSQL (server not built-in) and sqlite3 support.
-- Redis, FTP, SMB, LDAP, IMAP support.
-- GNU Libiconv for php iconv extension (avoiding errors with some apps).
-- No **running** root processes **except on start** (reducing privileges afterwards).
-- Environment variables provided (see below).
+Other changes that should be reflected in your configuration files:
+- `/config` volume is now `/nextcloud/config`
+- `/apps2` volume is now `/nextcloud/apps2`
+- `ghcr.io/wonderfall/nextcloud` is the new image location
 
-### Security
-As many images from the time it was first made, this image follows the principle of degrading privileges. It runs first as root to ensure permissions are set correctly and then only makes use of the UID/GID of your choice. While I agree it's not perfect (due to Linux insecurity), it seemed the best security/comfort balance at the time and it'll remain so for a while.
+You should edit your `docker-compose.yml` and `config.php` accordingly.
 
-### Tags
-- **latest** : latest stable version.
-- **21.0** : latest 21.0.x version (stable, recommended)
-- **20.0** : latest 20.0.x version (old stable)
-
-Since this project should suit my needs, I'll only maintain the latest stable version available.
-
-### Build-time variables
-- **NEXTCLOUD_VERSION** : version of nextcloud
-- **GPG_nextcloud** : signing key fingerprint
-
-### Environment variables
-- **UID** : nextcloud user id *(default : 991)*
-- **GID** : nextcloud group id *(default : 991)*
-- **UPLOAD_MAX_SIZE** : maximum upload size *(default : 10G)*
-- **APC_SHM_SIZE** : apc memory size *(default : 128M)*
-- **OPCACHE_MEM_SIZE** : opcache memory size in megabytes *(default : 128)*
-- **MEMORY_LIMIT** : php memory limit *(default : 512M)*
-- **CRON_PERIOD** : time interval between two cron tasks *(default : 15m)*
-- **CRON_MEMORY_LIMIT** : memory limit for PHP when executing cronjobs *(default : 1024m)*
-- **TZ** : the system/log timezone *(default : Etc/UTC)*
-- **ADMIN_USER** : username of the admin account *(default : none, web configuration)*
-- **ADMIN_PASSWORD** : password of the admin account *(default : none, web configuration)*
-- **DOMAIN** : domain to use during the setup *(default : localhost)*
-- **DB_TYPE** : database type (sqlite3, mysql or pgsql) *(default : sqlite3)*
-- **DB_NAME** : name of database *(default : none)*
-- **DB_USER** : username for database *(default : none)*
-- **DB_PASSWORD** : password for database user *(default : none)*
-- **DB_HOST** : database host *(default : none)*
-
-Don't forget to use a **strong password** for the admin account!
-
-### Port
-- **8888** : HTTP Nextcloud port.
-
-### Volumes
-- **/data** : Nextcloud data.
-- **/config** : config.php location.
-- **/apps2** : Nextcloud downloaded apps.
-- **/nextcloud/themes** : Nextcloud themes location.
-- **/php/session** : php session files.
-
-### Database
-Basically, you can use a database instance running on the host or any other machine. An easier solution is to use an external database container. I suggest you to use MariaDB, which is a reliable database server. You can use the official `mariadb` image available on Docker Hub to create a database container, which must be linked to the Nextcloud container. PostgreSQL can also be used as well.
-
-### Setup
-Pull the image and create a container. `/docker` can be anywhere on your host, this is just an example. Change `MYSQL_ROOT_PASSWORD` and `MYSQL_PASSWORD` values (mariadb). You may also want to change UID and GID for Nextcloud, as well as other variables (see *Environment Variables*).
-
-```
-docker pull wonderfall/nextcloud && docker pull mariadb
-
-docker run -d --name db_nextcloud \
-       -v /docker/nextcloud/db:/var/lib/mysql \
-       -e MYSQL_ROOT_PASSWORD=supersecretpassword \
-       -e MYSQL_DATABASE=nextcloud -e MYSQL_USER=nextcloud \
-       -e MYSQL_PASSWORD=supersecretpassword \
-       mariadb:10
-
-docker run -d --name nextcloud \
-       --link db_nextcloud:db_nextcloud \
-       -v /docker/nextcloud/data:/data \
-       -v /docker/nextcloud/config:/config \
-       -v /docker/nextcloud/apps:/apps2 \
-       -v /docker/nextcloud/themes:/nextcloud/themes \
-       -e UID=1000 -e GID=1000 \
-       -e UPLOAD_MAX_SIZE=10G \
-       -e APC_SHM_SIZE=128M \
-       -e OPCACHE_MEM_SIZE=128 \
-       -e CRON_PERIOD=15m \
-       -e TZ=Etc/UTC \
-       -e ADMIN_USER=mrrobot \
-       -e ADMIN_PASSWORD=supercomplicatedpassword \
-       -e DOMAIN=cloud.example.com \
-       -e DB_TYPE=mysql \
-       -e DB_NAME=nextcloud \
-       -e DB_USER=nextcloud \
-       -e DB_PASSWORD=supersecretpassword \
-       -e DB_HOST=db_nextcloud \
-       wonderfall/nextcloud
-```
-
-You are **not obliged** to use `ADMIN_USER` and `ADMIN_PASSWORD`. If these variables are not provided, you'll be able to configure your admin acccount from your browser.
-
-### Configure
-In the admin panel, you should switch from `AJAX cron` to `cron` (system cron).
-
-### Update
-Pull a newer image, then recreate the container as you did before (*Setup* step). None of your data will be lost since you're using external volumes. If Nextcloud performed a full upgrade, your apps could be disabled, enable them again **(starting with 12.0.x, your apps are automatically enabled after an upgrade)**.
-
-### Docker-compose
-I advise you to use [docker-compose](https://docs.docker.com/compose/), which is a great tool for managing containers. You can create a `docker-compose.yml` with the following content (which must be adapted to your needs) and then run `docker-compose up -d nextcloud-db`, wait some 15 seconds for the database to come up, then run everything with `docker-compose up -d`, that's it! On subsequent runs,  a single `docker-compose up -d` is sufficient!
-
-#### Docker-compose file
-Don't copy/paste without thinking! It is a model so you can see how to do it correctly.
-
-```
-version: '3'
-
-networks:
-  nextcloud_network:
-    external: false
-
-services:
-  nextcloud:
-    image: wonderfall/nextcloud
-    depends_on:
-      - nextcloud-db           # If using MySQL
-      - redis                  # If using Redis
-    environment:
-      - UID=1000
-      - GID=1000
-      - UPLOAD_MAX_SIZE=10G
-      - APC_SHM_SIZE=128M
-      - OPCACHE_MEM_SIZE=128
-      - CRON_PERIOD=15m
-      - TZ=Europe/Berlin
-      - DOMAIN=localhost
-      - DB_TYPE=mysql
-      - DB_NAME=nextcloud
-      - DB_USER=nextcloud
-      - DB_PASSWORD=supersecretpassword
-      - DB_HOST=nextcloud-db
-    volumes:
-      - /docker/nextcloud/data:/data
-      - /docker/nextcloud/config:/config
-      - /docker/nextcloud/apps:/apps2
-      - /docker/nextcloud/themes:/nextcloud/themes
-    networks:
-      - nextcloud_network
-
-  # If using MySQL
-  nextcloud-db:
-    image: mariadb
-    volumes:
-      - /docker/nextcloud/db:/var/lib/mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=supersecretpassword
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-      - MYSQL_PASSWORD=supersecretpassword
-    networks:
-      - nextcloud_network
-
-  # If using Redis
-  redis:
-    image: redis:alpine
-    container_name: redis
-    volumes:
-      - /docker/nextcloud/redis:/data
-    networks:
-      - nextcloud_network
-```
-
-You can update everything with `docker-compose pull` followed by `docker-compose up -d`.
-
-### How to configure Redis
-Redis can be used for distributed and file locking cache, alongside with APCu (local cache), thus making Nextcloud even more faster. As PHP redis extension is already included, all you have to is to deploy a redis server (you can do as above with docker-compose) and bind it to nextcloud in your config.php file :
-
-```
-'memcache.distributed' => '\OC\Memcache\Redis',
-'memcache.locking' => '\OC\Memcache\Redis',
-'memcache.local' => '\OC\Memcache\APCu',
-'redis' => array(
-   'host' => 'redis',
-   'port' => 6379,
-   ),
-```
-
-### Tip : how to use occ command
-There is a script for that, so you shouldn't bother to log into the container, set the right permissions, and so on. Just use `docker exec -ti nexcloud occ command`.
+## Get started
+*To do.*
