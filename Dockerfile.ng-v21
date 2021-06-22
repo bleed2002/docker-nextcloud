@@ -1,11 +1,9 @@
 # -------------- Build-time variables --------------
 ARG NEXTCLOUD_VERSION=21.0.2
+ARG PHP_VERSION=8.0
+ARG NGINX_VERSION=1.20
 
 ARG ALPINE_VERSION=3.13
-ARG PHP_VERSION=8.0.6
-ARG NGINX_VERSION=1.20.1
-ARG APCU_VERSION=5.1.20
-ARG REDIS_VERSION=5.3.4
 ARG HARDENED_MALLOC_VERSION=8
 ARG DOCKERIZE_VERSION=v0.6.1
 
@@ -57,8 +55,8 @@ RUN apk -U upgrade \
         pdo_pgsql \
         zip \
         gmp \
- && pecl install APCu-${APCU_VERSION} \
- && pecl install redis-${REDIS_VERSION} \
+ && pecl install APCu \
+ && pecl install redis \
  && echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini \
  && apk del build-deps \
  && rm -rf /var/cache/apk/*
@@ -69,11 +67,13 @@ ARG ALPINE_VERSION
 FROM alpine:${ALPINE_VERSION} as build-malloc
 
 ARG HARDENED_MALLOC_VERSION
+ARG CONFIG_NATIVE=false
 
-RUN apk --no-cache add build-base && cd /tmp \
- && wget -q https://github.com/GrapheneOS/hardened_malloc/archive/refs/tags/${HARDENED_MALLOC_VERSION}.tar.gz \
- && mkdir hardened_malloc && tar xf ${HARDENED_MALLOC_VERSION}.tar.gz -C hardened_malloc --strip-components 1 \
- && cd hardened_malloc && make
+RUN apk --no-cache add build-base git gnupg && cd /tmp \
+ && wget -q https://github.com/thestinger.gpg && gpg --import thestinger.gpg \
+ && git clone --depth 1 --branch ${HARDENED_MALLOC_VERSION} https://github.com/GrapheneOS/hardened_malloc \
+ && cd hardened_malloc && git verify-tag $(git describe --tags) \
+ && make CONFIG_NATIVE=${CONFIG_NATIVE}
 
 
 ### Fetch nginx
