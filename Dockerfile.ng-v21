@@ -14,52 +14,45 @@ ARG GID=1000
 ### Build PHP base
 FROM php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} as base
 
-ARG APCU_VERSION
-ARG REDIS_VERSION
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
-RUN apk -U upgrade \
- && apk add -t build-deps \
-        $PHPIZE_DEPS \
-        freetype-dev \
-        gmp-dev \
-        icu-dev \
-        libjpeg-turbo-dev \
-        libpng-dev \
-        libwebp-dev \
-        libzip-dev \
-        openldap-dev \
-        postgresql-dev \
-        zlib-dev \
- && apk --no-cache add \
-        freetype \
-        gmp \
-        icu \
-        libjpeg-turbo \
-        libpq \
-        libpq \
-        libwebp \
-        libzip \
-        openldap \
-        zlib \
- && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
- && docker-php-ext-configure ldap \
- && docker-php-ext-install -j "$(nproc)" \
-        bcmath \
-        exif \
-        gd \
-        intl \
-        ldap \
-        opcache \
-        pcntl \
-        pdo_mysql \
-        pdo_pgsql \
-        zip \
-        gmp \
- && pecl install APCu \
- && pecl install redis \
- && echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini \
- && apk del build-deps \
- && rm -rf /var/cache/apk/*
+RUN chmod +x /usr/local/bin/install-php-extensions && sync
+#
+#	Failing extensions:
+#	geoip
+#
+RUN install-php-extensions \
+	amqp \
+	apcu \
+	bcmath \
+	bz2 \
+	@composer \
+	csv \
+	exif \
+	gd \
+	gmp \
+	gettext \
+	imagick \
+	imap \
+	intl \
+	ldap \
+	mcrypt \
+	memcached \
+	mysqli \
+	opcache \
+	pcntl \
+	pdo_mysql \
+	pdo_pgsql \
+	rdkafka \
+	redis \
+	soap \
+	sockets \
+	ssh2 \
+	tidy \
+	xmlrpc \
+	xsl \
+	yaml \
+	zip
 
 
 ### Build Hardened Malloc
