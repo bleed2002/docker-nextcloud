@@ -1,11 +1,10 @@
 # -------------- Build-time variables --------------
-ARG NEXTCLOUD_VERSION=21.0.2
+ARG NEXTCLOUD_VERSION=22.2.0
 ARG PHP_VERSION=8.0
 ARG NGINX_VERSION=1.20
 
-ARG ALPINE_VERSION=3.13
+ARG ALPINE_VERSION=3.14
 ARG HARDENED_MALLOC_VERSION=8
-ARG DOCKERIZE_VERSION=v0.6.1
 
 ARG UID=1000
 ARG GID=1000
@@ -92,7 +91,6 @@ ARG GPG_nextcloud="2880 6A87 8AE4 23A2 8372  792E D758 99B9 A724 937A"
 
 ARG UID
 ARG GID
-ARG DOCKERIZE_VERSION
 
 ENV UPLOAD_MAX_SIZE=10G \
     APC_SHM_SIZE=128M \
@@ -127,10 +125,6 @@ RUN apk --no-cache add \
  && apk del gnupg && rm -rf /tmp/* /root/.gnupg \
  && adduser -g ${GID} -u ${UID} --disabled-password --gecos "" nextcloud \
  && chown -R nextcloud:nextcloud /nextcloud
-
-RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 COPY --chown=nextcloud:nextcloud rootfs /
 

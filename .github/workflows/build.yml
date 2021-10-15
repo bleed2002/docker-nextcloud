@@ -17,22 +17,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: v21 - Build and tag image from Dockerfile
-        run: |
-            docker build \
-                -f Dockerfile.ng-v21 \
-                -t "$IMAGE_NAME:ng-v21" \
-                .
-
-      - name: Dockerhub login
-        run: >-
-            echo "${{ secrets.DOCKER_HUB_PASSWORD }}"
-            | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
-
-      - name: Push image to Dockerhub
-        run: |
-            docker push "$IMAGE_NAME:ng-v21"
-
+#      - name: v21 - Build and tag image from Dockerfile
+#        run: |
+#            docker build \
+#                -f Dockerfile.ng-v21 \
+#                -t "$IMAGE_NAME:ng-v21" \
+#                .
+#
+#      - name: Dockerhub login
+#        run: >-
+#            echo "${{ secrets.DOCKER_HUB_PASSWORD }}"
+#            | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+#
+#      - name: Push image to Dockerhub
+#        run: |
+#            docker push "$IMAGE_NAME:ng-v21"
 
       - name: v22 - Build and tag image from Dockerfile
         run: |
