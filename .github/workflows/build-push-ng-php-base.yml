@@ -1,0 +1,46 @@
+name: Docker Build and Push (php base image)
+
+# Only build manually on demand
+on:
+    workflow_dispatch:
+        inputs:
+            PHP_VERSION:
+                description: 'PHP Version as used in Dockerfile.ng-php-base'
+                default: '8.0'
+                type: string
+                required: true
+            ALPINE_VERSION:
+                description: 'Alpine version as used in Dockerfile.ng-php-base'
+                default: '3.15'
+                type: string
+                required: true
+env:
+    IMAGE_NAME: bleed2002/nextcloud
+    # Change according to Dockerfile.ng-php-base
+    PHP_VERSION: ${{ github.event.inputs.PHP_VERSION }}
+    ALPINE_VERSION: ${{ github.event.inputs.ALPINE_VERSION }}
+
+jobs:
+    docker_build_push_ng_php_base:
+        runs-on: ubuntu-latest
+
+        # Steps represent a sequence of tasks that will be executed as part of the job
+        steps:
+            - name: "Setup: docker buildx"
+              id: buildx
+              uses: docker/setup-buildx-action@v1
+
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v1
+              with:
+                  username: ${{ secrets.DOCKER_HUB_USERNAME }}
+                  password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+            # Build docker image
+            - name: "Docker: Build and push (NC v22)"
+              uses: docker/build-push-action@v2
+              with:
+                  file: Dockerfile.ng-php-base
+                  push: true
+                  tags:
+                      "bleed2002/nextcloud:php-${{ env.PHP_VERSION }}-fpm-alpine${{ env.ALPINE_VERSION }}"

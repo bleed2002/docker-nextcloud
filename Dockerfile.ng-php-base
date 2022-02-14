@@ -12,7 +12,44 @@ ARG GID=1000
 # ---------------------------------------------------
 
 ### Build PHP base
-FROM bleed2002/nextcloud:php-${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} as base
+FROM php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} as base
+
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/install-php-extensions && sync
+RUN install-php-extensions \
+	amqp \
+	apcu \
+	bcmath \
+	bz2 \
+	@composer \
+	csv \
+	exif \
+	gd \
+	gmp \
+	gettext \
+	imagick \
+	imap \
+	intl \
+	ldap \
+	mcrypt \
+	memcached \
+	mysqli \
+	opcache \
+	pcntl \
+	pdo_mysql \
+	pdo_pgsql \
+	rdkafka \
+	redis \
+	soap \
+	sockets \
+	ssh2 \
+	tidy \
+	xmlrpc \
+	xsl \
+	yaml \
+	zip
+
 
 ### Build Hardened Malloc
 ARG ALPINE_VERSION
