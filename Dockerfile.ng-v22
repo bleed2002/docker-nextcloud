@@ -22,12 +22,10 @@ RUN chmod +x /usr/local/bin/install-php-extensions && sync
 #	geoip
 #
 RUN install-php-extensions \
-	amqp \
 	apcu \
 	bcmath \
 	bz2 \
 	@composer \
-	csv \
 	exif \
 	gd \
 	gmp \
@@ -38,19 +36,11 @@ RUN install-php-extensions \
 	ldap \
 	mcrypt \
 	memcached \
-	mysqli \
 	opcache \
 	pcntl \
 	pdo_mysql \
-	pdo_pgsql \
-	rdkafka \
 	redis \
-	soap \
-	sockets \
-	ssh2 \
-	tidy \
-	xmlrpc \
-	xsl \
+	smbclient \
 	yaml \
 	zip
 
@@ -119,7 +109,8 @@ RUN apk --no-cache add \
  && mkdir /nextcloud && tar xjf ${NEXTCLOUD_TARBALL} --strip 1 -C /nextcloud \
  && apk del gnupg && rm -rf /tmp/* /root/.gnupg \
  && adduser -g ${GID} -u ${UID} --disabled-password --gecos "" nextcloud \
- && chown -R nextcloud:nextcloud /nextcloud
+ && mkdir -p /var/log/nginx && mkdir -p /var/cache/nginx && mkdir -p /var/run/php \
+ && chown -R nextcloud:nextcloud /nextcloud /var/log/nginx /var/cache/nginx /var/run/php
 
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \

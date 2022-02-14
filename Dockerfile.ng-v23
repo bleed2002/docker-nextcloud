@@ -120,7 +120,8 @@ RUN apk --no-cache add \
  && mkdir /nextcloud && tar xjf ${NEXTCLOUD_TARBALL} --strip 1 -C /nextcloud \
  && apk del gnupg && rm -rf /tmp/* /root/.gnupg \
  && adduser -g ${GID} -u ${UID} --disabled-password --gecos "" nextcloud \
- && chown -R nextcloud:nextcloud /nextcloud
+ && mkdir -p /var/log/nginx && mkdir -p /var/cache/nginx && mkdir -p /var/run/php \
+ && chown -R nextcloud:nextcloud /nextcloud /var/log/nginx /var/cache/nginx /var/run/php
 
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
