@@ -17,10 +17,6 @@ FROM php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} as base
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/install-php-extensions && sync
-#
-#	Failing extensions:
-#	geoip
-#
 RUN install-php-extensions \
 	apcu \
 	bcmath \
@@ -44,7 +40,6 @@ RUN install-php-extensions \
 	yaml \
 	zip
 
-
 ### Build Hardened Malloc
 ARG ALPINE_VERSION
 FROM alpine:${ALPINE_VERSION} as build-malloc
@@ -58,10 +53,8 @@ RUN apk --no-cache add build-base git gnupg && cd /tmp \
  && cd hardened_malloc && git verify-tag $(git describe --tags) \
  && make CONFIG_NATIVE=${CONFIG_NATIVE}
 
-
 ### Fetch nginx
 FROM nginx:${NGINX_VERSION}-alpine as nginx
-
 
 ### Build Nextcloud (production environemnt)
 FROM base as nextcloud

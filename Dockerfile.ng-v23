@@ -28,10 +28,8 @@ RUN apk --no-cache add build-base git gnupg && cd /tmp \
  && cd hardened_malloc && git verify-tag $(git describe --tags) \
  && make CONFIG_NATIVE=${CONFIG_NATIVE} VARIANT=${VARIANT}
 
-
 ### Fetch nginx
 FROM nginx:${NGINX_VERSION}-alpine as nginx
-
 
 ### Build Nextcloud (production environemnt)
 FROM base as nextcloud

@@ -1,0 +1,42 @@
+name: Build nextcloud app image
+
+# Only build manually on demand
+on:
+    workflow_dispatch:
+        inputs:
+            NC_VERSION:
+                description: 'The nextcloud version to build'
+                default: '23'
+                type: string
+                required: true
+
+env:
+    IMAGE_NAME: bleed2002/nextcloud
+    # Which NC version should be build ?
+    NC_VERSION: ${{ github.event.inputs.NC_VERSION }}
+
+jobs:
+    build_nextcloud_app:
+        # The type of runner that the job will run on
+        runs-on: ubuntu-latest
+
+        # Steps represent a sequence of tasks that will be executed as part of the job
+        steps:
+            - name: "Setup: docker setup buildx"
+              id: buildx
+              uses: docker/setup-buildx-action@v1
+
+            - name: "Setup: docker login"
+              uses: docker/login-action@v1
+              with:
+                  username: ${{ secrets.DOCKER_HUB_USERNAME }}
+                  password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+            # Build docker image
+            - name: "Docker: Build and push (Nextcloud ${{ env.NC_VERSION }})"
+              uses: docker/build-push-action@v2
+              with:
+                  file: "Dockerfile.ng-v${{ env.NC_VERSION }}"
+                  push: true
+                  tags: |
+                      "bleed2002/nextcloud:ng-v${{ env.NC_VERSION }}"
