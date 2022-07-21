@@ -6,6 +6,7 @@ ARG NGINX_VERSION=1.22
 ARG ALPINE_VERSION=3.16
 ARG HARDENED_MALLOC_VERSION=11
 ARG SNUFFLEUPAGUS_VERSION=0.8.2
+ARG DOCKERIZE_VERSION=v0.6.1
 
 ARG UID=1000
 ARG GID=1000
@@ -18,57 +19,7 @@ ARG GPG_FINGERPRINT="2880 6A87 8AE4 23A2 8372  792E D758 99B9 A724 937A"
 # ---------------------------------------------------
 
 ### Build PHP base
-FROM php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} as base
-
-ARG SNUFFLEUPAGUS_VERSION
-
-RUN apk -U upgrade \
- && apk add -t build-deps \
-        $PHPIZE_DEPS \
-        freetype-dev \
-        git \
-        gmp-dev \
-        icu-dev \
-        libjpeg-turbo-dev \
-        libpng-dev \
-        libwebp-dev \
-        libzip-dev \
-        openldap-dev \
-        postgresql-dev \
-        zlib-dev \
- && apk --no-cache add \
-        freetype \
-        gmp \
-        icu \
-        libjpeg-turbo \
-        libpq \
-        libpq \
-        libwebp \
-        libzip \
-        openldap \
-        zlib \
- && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
- && docker-php-ext-configure ldap \
- && docker-php-ext-install -j "$(nproc)" \
-        bcmath \
-        exif \
-        gd \
-        intl \
-        ldap \
-        opcache \
-        pcntl \
-        pdo_mysql \
-        pdo_pgsql \
-        zip \
-        gmp \
- && pecl install APCu \
- && pecl install redis \
- && echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini \
- && cd /tmp && git clone --depth 1 --branch v${SNUFFLEUPAGUS_VERSION} https://github.com/jvoisin/snuffleupagus \
- && cd snuffleupagus/src && phpize && ./configure --enable-snuffleupagus && make && make install \
- && apk del build-deps \
- && rm -rf /var/cache/apk/* /tmp/*
-
+FROM bleed2002/nextcloud:php-${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} as base
 
 ### Build Hardened Malloc
 ARG ALPINE_VERSION
@@ -84,10 +35,8 @@ RUN apk --no-cache add build-base git gnupg && cd /tmp \
  && cd hardened_malloc && git verify-tag $(git describe --tags) \
  && make CONFIG_NATIVE=${CONFIG_NATIVE} VARIANT=${VARIANT}
 
-
 ### Fetch nginx
 FROM nginx:${NGINX_VERSION}-alpine as nginx
-
 
 ### Build Nextcloud (production environemnt)
 FROM base as nextcloud
@@ -102,6 +51,7 @@ ARG GPG_FINGERPRINT
 
 ARG UID
 ARG GID
+ARG DOCKERIZE_VERSION
 
 ENV UPLOAD_MAX_SIZE=10G \
     APC_SHM_SIZE=128M \
@@ -111,7 +61,7 @@ ENV UPLOAD_MAX_SIZE=10G \
     CRON_MEMORY_LIMIT=1g \
     DB_TYPE=sqlite3 \
     DOMAIN=localhost \
-    PHP_HARDENING=true \
+    PHP_HARDENING=false \
     LD_PRELOAD="/usr/local/lib/libhardened_malloc-light.so"
 
 RUN apk --no-cache add \
@@ -134,7 +84,12 @@ RUN apk --no-cache add \
  && mkdir /nextcloud && tar xjf ${NEXTCLOUD_TARBALL} --strip 1 -C /nextcloud \
  && apk del gnupg && rm -rf /tmp/* /root/.gnupg \
  && adduser -g ${GID} -u ${UID} --disabled-password --gecos "" nextcloud \
- && chown -R nextcloud:nextcloud /nextcloud
+ && mkdir -p /var/log/nginx && mkdir -p /var/cache/nginx && mkdir -p /var/run/php \
+ && chown -R nextcloud:nextcloud /nextcloud /var/log/nginx /var/cache/nginx /var/run/php
+
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 COPY --chown=nextcloud:nextcloud rootfs /
 

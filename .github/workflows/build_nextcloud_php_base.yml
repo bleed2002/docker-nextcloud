@@ -6,12 +6,12 @@ on:
         inputs:
             PHP_VERSION:
                 description: 'PHP Version as used in Dockerfile.ng-php-base'
-                default: '8.0'
+                default: '8.1'
                 type: string
                 required: true
             ALPINE_VERSION:
                 description: 'Alpine version as used in Dockerfile.ng-php-base'
-                default: '3.15'
+                default: '3.16'
                 type: string
                 required: true
 
