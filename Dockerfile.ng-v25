@@ -1,5 +1,6 @@
 # -------------- Build-time variables --------------
 ARG NEXTCLOUD_VERSION=25.0.3
+ARG NEXTCLOUD_PUSH_VERSION=0.5.0
 ARG PHP_VERSION=8.1
 ARG NGINX_VERSION=1.22
 
@@ -46,12 +47,14 @@ COPY --from=nginx /etc/nginx /etc/nginx
 COPY --from=build-malloc /tmp/hardened_malloc/out-light/libhardened_malloc-light.so /usr/local/lib/
 
 ARG NEXTCLOUD_VERSION
+ARG NEXTCLOUD_PUSH_VERSION
 ARG SHA256_SUM
 ARG GPG_FINGERPRINT
 
 ARG UID
 ARG GID
 ARG DOCKERIZE_VERSION
+ARG NEXTCLOUD_PUSH_VERSION
 
 ENV UPLOAD_MAX_SIZE=10G \
     APC_SHM_SIZE=128M \
@@ -87,9 +90,12 @@ RUN apk --no-cache add \
  && mkdir -p /var/log/nginx && mkdir -p /var/cache/nginx && mkdir -p /var/run/php \
  && chown -R nextcloud:nextcloud /nextcloud /var/log/nginx /var/cache/nginx /var/run/php
 
-RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+RUN cd /tmp && wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+
+RUN cd /tmp && wget https://github.com/nextcloud/notify_push/releases/download/v${NEXTCLOUD_PUSH_VERSION}/notify_push-x86_64-unknown-linux-musl \
+    && mv notify_push-x86_64-unknown-linux-musl /usr/local/bin/notify_push
 
 COPY --chown=nextcloud:nextcloud rootfs /
 
