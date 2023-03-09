@@ -1,17 +1,17 @@
 # -------------- Build-time variables --------------
-ARG NEXTCLOUD_VERSION=24.0.3
+ARG NEXTCLOUD_VERSION=25.0.3
 ARG PHP_VERSION=8.1
 ARG NGINX_VERSION=1.22
 
 ARG ALPINE_VERSION=3.16
 ARG HARDENED_MALLOC_VERSION=11
-ARG SNUFFLEUPAGUS_VERSION=0.8.2
+ARG SNUFFLEUPAGUS_VERSION=0.8.3
 
 ARG UID=1000
 ARG GID=1000
 
-# nextcloud-24.0.3.tar.bz2
-ARG SHA256_SUM="320c81f9b902922b4bcef3eacf858596a14347fd45bddd26dac198562d212439"
+# nextcloud-25.0.3.tar.bz2
+ARG SHA256_SUM="4b2b1423736ef92469096fe24f61c24cad87a34e07c1c7a81b385d3ea25c00ec"
 
 # Nextcloud Security <security@nextcloud.com> (D75899B9A724937A)
 ARG GPG_FINGERPRINT="2880 6A87 8AE4 23A2 8372  792E D758 99B9 A724 937A"
@@ -134,7 +134,7 @@ RUN apk --no-cache add \
  && mkdir /nextcloud && tar xjf ${NEXTCLOUD_TARBALL} --strip 1 -C /nextcloud \
  && apk del gnupg && rm -rf /tmp/* /root/.gnupg \
  && adduser -g ${GID} -u ${UID} --disabled-password --gecos "" nextcloud \
- && chown -R nextcloud:nextcloud /nextcloud
+ && chown -R nextcloud:nextcloud /nextcloud/config
 
 COPY --chown=nextcloud:nextcloud rootfs /
 
