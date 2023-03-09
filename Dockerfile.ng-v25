@@ -94,9 +94,6 @@ RUN cd /tmp && wget https://github.com/jwilder/dockerize/releases/download/$DOCK
     && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
-RUN cd /tmp && wget https://github.com/nextcloud/notify_push/releases/download/v${NEXTCLOUD_PUSH_VERSION}/notify_push-x86_64-unknown-linux-musl \
-    && mv notify_push-x86_64-unknown-linux-musl /usr/local/bin/notify_push
-
 COPY --chown=nextcloud:nextcloud rootfs /
 
 RUN chmod +x /usr/local/bin/* /etc/s6.d/*/* /etc/s6.d/.s6-svscan/*
