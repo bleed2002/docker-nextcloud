@@ -11,7 +11,7 @@ on:
                 required: true
             ALPINE_VERSION:
                 description: 'Alpine version as used in Dockerfile.ng-php-base'
-                default: '3.16'
+                default: '3.17'
                 type: string
                 required: true
 
