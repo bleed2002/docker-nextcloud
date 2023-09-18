@@ -6,7 +6,7 @@ on:
         inputs:
             NC_VERSION:
                 description: 'The nextcloud version to build'
-                default: '25'
+                default: '26'
                 type: string
                 required: true
 
