@@ -2,13 +2,15 @@
 
 ## Supported versions
 
-As of now, only the latest stable version is supported.
+All versions of the Nextcloud community version which still receive updates will be supported
+and will receive the minor version updates and security patches.
 
 | Version | Supported          |
 | ------- | ------------------ |
+| 25. x   | :white_check_mark: |
 | 24. x   | :white_check_mark: |
-| 23. x   | :x:                |
-| 22. x   | :x:                |
+| 23. x   | :negative_squared_cross_mark: |
+| 22. x   | :negative_squared_cross_mark: |
 
 Please update to the latest version available. Major migrations are always tested before being pushed.
 
@@ -25,4 +27,4 @@ Regarding vulnerabilities specific to this project:
 - Unsafe defaults
 - Dependencies security updates
 
-Those can be disclosed in private to `wonderfall@pm.me` or `wonderfall:targaryen.house` on Matrix (preferred).
+Those can be disclosed in private to `dev@hoellen.eu`.

@@ -1,18 +1,18 @@
 # -------------- Build-time variables --------------
-ARG NEXTCLOUD_VERSION=27.0.2
+ARG NEXTCLOUD_VERSION=27.1.4
 ARG PHP_VERSION=8.2
-ARG NGINX_VERSION=1.22
+ARG NGINX_VERSION=1.24
 
 ARG ALPINE_VERSION=3.18
 ARG HARDENED_MALLOC_VERSION=11
-ARG SNUFFLEUPAGUS_VERSION=0.8.3
+ARG SNUFFLEUPAGUS_VERSION=0.10.0
 ARG DOCKERIZE_VERSION=v0.6.1
 
 ARG UID=1000
 ARG GID=1000
 
-# nextcloud-27.0.2.tar.bz2
-ARG SHA256_SUM="7a2dcea43aa3b8fb303347efda4c6f37733cca113c8ee16dd9f0e5fb68c7212f"
+# nextcloud-27.1.4.tar.bz2
+ARG SHA256_SUM="bec65f2166b82c9303baf476c1e424f71aa196dad010ffe4c0c39d03990d594c"
 
 # Nextcloud Security <security@nextcloud.com> (D75899B9A724937A)
 ARG GPG_FINGERPRINT="2880 6A87 8AE4 23A2 8372  792E D758 99B9 A724 937A"
@@ -105,7 +105,7 @@ EXPOSE 8888
 
 LABEL org.opencontainers.image.description="All-in-one Nextcloud image, based on Alpine Linux" \
       org.opencontainers.image.version="${NEXTCLOUD_VERSION}" \
-      org.opencontainers.image.authors="Wonderfall <wonderfall@protonmail.com>" \
-      org.opencontainers.image.source="https://github.com/Wonderfall/docker-nextcloud"
+      org.opencontainers.image.authors="Hoellen <dev@hoellen.eu>" \
+      org.opencontainers.image.source="https://github.com/hoellen/docker-nextcloud"
 
 CMD ["run.sh"]

@@ -1,17 +1,17 @@
 # -------------- Build-time variables --------------
-ARG NEXTCLOUD_VERSION=25.0.3
-ARG PHP_VERSION=8.1
-ARG NGINX_VERSION=1.22
+ARG NEXTCLOUD_VERSION=27.1.4
+ARG PHP_VERSION=8.2
+ARG NGINX_VERSION=1.24
 
-ARG ALPINE_VERSION=3.16
+ARG ALPINE_VERSION=3.18
 ARG HARDENED_MALLOC_VERSION=11
-ARG SNUFFLEUPAGUS_VERSION=0.8.3
+ARG SNUFFLEUPAGUS_VERSION=0.10.0
 
 ARG UID=1000
 ARG GID=1000
 
-# nextcloud-25.0.3.tar.bz2
-ARG SHA256_SUM="4b2b1423736ef92469096fe24f61c24cad87a34e07c1c7a81b385d3ea25c00ec"
+# nextcloud-27.1.4.tar.bz2
+ARG SHA256_SUM="bec65f2166b82c9303baf476c1e424f71aa196dad010ffe4c0c39d03990d594c"
 
 # Nextcloud Security <security@nextcloud.com> (D75899B9A724937A)
 ARG GPG_FINGERPRINT="2880 6A87 8AE4 23A2 8372  792E D758 99B9 A724 937A"
@@ -35,6 +35,8 @@ RUN apk -U upgrade \
         libzip-dev \
         openldap-dev \
         postgresql-dev \
+        samba-dev \
+        imagemagick-dev \
         zlib-dev \
  && apk --no-cache add \
         freetype \
@@ -45,7 +47,10 @@ RUN apk -U upgrade \
         libpq \
         libwebp \
         libzip \
+        libsmbclient \
         openldap \
+        libgomp \
+        imagemagick \
         zlib \
  && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
  && docker-php-ext-configure ldap \
@@ -59,11 +64,17 @@ RUN apk -U upgrade \
         pcntl \
         pdo_mysql \
         pdo_pgsql \
+        sysvsem \
         zip \
         gmp \
+ && pecl install smbclient \
  && pecl install APCu \
  && pecl install redis \
- && echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini \
+ && pecl install imagick \
+ && docker-php-ext-enable \
+        smbclient \
+        redis \
+        imagick \
  && cd /tmp && git clone --depth 1 --branch v${SNUFFLEUPAGUS_VERSION} https://github.com/jvoisin/snuffleupagus \
  && cd snuffleupagus/src && phpize && ./configure --enable-snuffleupagus && make && make install \
  && apk del build-deps \
@@ -150,7 +161,7 @@ EXPOSE 8888
 
 LABEL org.opencontainers.image.description="All-in-one Nextcloud image, based on Alpine Linux" \
       org.opencontainers.image.version="${NEXTCLOUD_VERSION}" \
-      org.opencontainers.image.authors="Wonderfall <wonderfall@protonmail.com>" \
-      org.opencontainers.image.source="https://github.com/Wonderfall/docker-nextcloud"
+      org.opencontainers.image.authors="Hoellen <dev@hoellen.eu>" \
+      org.opencontainers.image.source="https://github.com/hoellen/docker-nextcloud"
 
 CMD ["run.sh"]

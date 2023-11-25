@@ -8,7 +8,7 @@
 sp.harden_random.enable();
 
 # Disabled XXE
-sp.xxe_protection.enable();
+#sp.xxe_protection.enable();
 
 # Global configuration variables
 # sp.global.secret_key("YOU _DO_ NEED TO CHANGE THIS WITH SOME RANDOM CHARACTERS.");
@@ -34,7 +34,7 @@ sp.sloppy_comparison.enable();
 # https://snuffleupagus.readthedocs.io/features.html#protection-against-cross-site-request-forgery
 sp.cookie.name("PHPSESSID").samesite("lax");
 
-# Nextcloud whitelist (tested with Nextcloud 25.0.0)
+# Nextcloud whitelist (tested with Nextcloud 27.0.1)
 sp.disable_function.function("function_exists").param("function").value("proc_open").filename("/nextcloud/3rdparty/symfony/console/Terminal.php").allow();
 sp.disable_function.function("function_exists").param("function").value("exec").filename("/nextcloud/lib/private/legacy/OC_Helper.php").allow();
 sp.disable_function.function("function_exists").param("function").value("exec").filename("/nextcloud/lib/public/Util.php").allow();
@@ -46,6 +46,10 @@ sp.disable_function.function("ini_get").param("option").value("open_basedir").fi
 sp.disable_function.function("ini_get").param("option").value("open_basedir").filename("/nextcloud/3rdparty/symfony/process/ExecutableFinder.php").allow();
 sp.disable_function.function("ini_get").param("option").value("allow_url_fopen").filename("/nextcloud/3rdparty/guzzlehttp/guzzle/src/Utils.php").allow();
 sp.disable_function.function("exec").param("command").value("apachectl -M | grep mpm").filename("/nextcloud/apps2/spreed/lib/Settings/Admin/AdminSettings.php").allow();
+
+# Nextcloud inherently enables XXE-Protection since 27.0.1, therefore, drop setting a new external entity loader
+sp.disable_function.function("libxml_set_external_entity_loader").filename("/nextcloud/lib/base.php").allow();
+sp.disable_function.function("libxml_set_external_entity_loader").drop();
 
 # Harden the `chmod` function (0777 (oct = 511, 0666 = 438)
 sp.disable_function.function("chmod").param("permissions").value("438").drop();
