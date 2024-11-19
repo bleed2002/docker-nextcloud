@@ -1,24 +1,24 @@
 # -------------- Build-time variables --------------
-ARG NEXTCLOUD_VERSION=27.1.4
+ARG NEXTCLOUD_VERSION=30.0.2
 ARG PHP_VERSION=8.2
-ARG NGINX_VERSION=1.24
+ARG NGINX_VERSION=1.26
 
-ARG ALPINE_VERSION=3.18
+ARG ALPINE_VERSION=3.20
 ARG HARDENED_MALLOC_VERSION=11
 ARG SNUFFLEUPAGUS_VERSION=0.10.0
 
 ARG UID=1000
 ARG GID=1000
 
-# nextcloud-27.1.4.tar.bz2
-ARG SHA256_SUM="bec65f2166b82c9303baf476c1e424f71aa196dad010ffe4c0c39d03990d594c"
+# nextcloud-30.0.2.tar.bz2
+ARG SHA256_SUM="929bb8045e96216fe22a65dcd66279e5bd7ba1abb29d99bf401d423b646a445f"
 
 # Nextcloud Security <security@nextcloud.com> (D75899B9A724937A)
 ARG GPG_FINGERPRINT="2880 6A87 8AE4 23A2 8372  792E D758 99B9 A724 937A"
 # ---------------------------------------------------
 
 ### Build PHP base
-FROM php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} as base
+FROM docker.io/library/php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} as base
 
 ARG SNUFFLEUPAGUS_VERSION
 
@@ -43,6 +43,7 @@ RUN apk -U upgrade \
         gmp \
         icu \
         libjpeg-turbo \
+        librsvg \
         libpq \
         libpq \
         libwebp \
@@ -58,6 +59,7 @@ RUN apk -U upgrade \
         bcmath \
         exif \
         gd \
+        bz2 \
         intl \
         ldap \
         opcache \
@@ -83,7 +85,7 @@ RUN apk -U upgrade \
 
 ### Build Hardened Malloc
 ARG ALPINE_VERSION
-FROM alpine:${ALPINE_VERSION} as build-malloc
+FROM docker.io/library/alpine:${ALPINE_VERSION} as build-malloc
 
 ARG HARDENED_MALLOC_VERSION
 ARG CONFIG_NATIVE=false
@@ -97,7 +99,7 @@ RUN apk --no-cache add build-base git gnupg && cd /tmp \
 
 
 ### Fetch nginx
-FROM nginx:${NGINX_VERSION}-alpine as nginx
+FROM docker.io/library/nginx:${NGINX_VERSION}-alpine as nginx
 
 
 ### Build Nextcloud (production environemnt)
