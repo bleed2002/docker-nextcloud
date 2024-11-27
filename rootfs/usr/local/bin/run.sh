@@ -11,48 +11,72 @@ sed -i -e "s/<APC_SHM_SIZE>/$APC_SHM_SIZE/g" /usr/local/etc/php/conf.d/docker-ph
 
 # Enable Snuffleupagus
 if [ "$PHP_HARDENING" == "true" ] && [ ! -f /usr/local/etc/php/conf.d/snuffleupagus.ini ]; then
-    echo "Enabling Snuffleupagus..."
-    cp /usr/local/etc/php/snuffleupagus/* /usr/local/etc/php/conf.d
+	echo "Enabling Snuffleupagus..."
+	cp /usr/local/etc/php/snuffleupagus/* /usr/local/etc/php/conf.d
 fi
 
 # If new install, run setup
 if [ ! -f /nextcloud/config/config.php ]; then
-    touch /nextcloud/config/CAN_INSTALL
-    /usr/local/bin/setup.sh
+	touch /nextcloud/config/CAN_INSTALL
+	/usr/local/bin/setup.sh
 else
-    # Run upgrade if applicable
-		echo "Running occ upgrade..."
-		occ upgrade -vv
-		echo "occ upgrade finished."
+	# Empty log file
+	echo "Emptying logfile /data/nextcloud.log ..."
+	> /data/nextcloud.log
+	echo "Emptying logfile /data/nextcloud.log finished ..."
+	echo ""
 
-		# Add missing columns
-		echo "Running occ db:add-missing-columns..."
-		occ db:add-missing-columns
-		echo "occ db:add-missing-columns finished."
+	# Run upgrade if applicable
+	echo "Running occ upgrade..."
+	occ upgrade -vv
+	echo "occ upgrade finished."
+	echo ""
 
-		# Add missing indexes
-		echo "Running occ db:add-missing-indices ..."
-		occ db:add-missing-indices
-		echo "occ db:add-missing-indices finished."
+	# Add missing columns
+	echo "Running occ db:add-missing-columns..."
+	occ db:add-missing-columns
+	echo "occ db:add-missing-columns finished."
+	echo ""
 
-		# Add missing columns
-		echo "Running occ db:add-missing-columns..."
-		occ db:add-missing-columns
-		echo "occ db:add-missing-columns finished."
+	# Add missing indexes
+	echo "Running occ db:add-missing-indices ..."
+	occ db:add-missing-indices
+	echo "occ db:add-missing-indices finished."
+	echo ""
 
-		# Add missing primary keys
-		echo "Running occ db:add-missing-primary-keys..."
-		occ db:add-missing-primary-keys
-		echo "occ db:db:add-missing-primary-keys finished."
+	# Add missing columns
+	echo "Running occ db:add-missing-columns..."
+	occ db:add-missing-columns
+	echo "occ db:add-missing-columns finished."
+	echo ""
 
-		# Convert column to bigint
-		echo "Running occ db:convert-filecache-bigint..."
-		occ db:convert-filecache-bigint
-		echo "occ db:convert-filecache-bigint finished."
+	# Add missing primary keys
+	echo "Running occ db:add-missing-primary-keys..."
+	occ db:add-missing-primary-keys
+	echo "occ db:db:add-missing-primary-keys finished."
+	echo ""
 
-		echo ""
-		echo "Done running upgrade scripts! Now starting up nextcloud..."
-		echo ""
+	# Convert column to bigint
+	echo "Running occ db:convert-filecache-bigint..."
+	occ db:convert-filecache-bigint
+	echo "occ db:convert-filecache-bigint finished."
+	echo ""
+
+	# Maintenance repair
+	echo "Running occ maintenance:repair --include-expensive..."
+	occ maintenance:repair --include-expensive
+	echo "occ maintenance:repair --include-expensive finished."
+	echo ""
+
+	# Update apps
+	echo "Running occ app:update --all..."
+	occ app:update --all
+	echo "occ app:update --all finished."
+	echo ""
+
+	echo ""
+	echo "Done running upgrade scripts! Now starting up nextcloud..."
+	echo ""
 fi
 
 # Run processes
