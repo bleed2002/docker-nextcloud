@@ -1,10 +1,10 @@
 # -------------- Build-time variables --------------
-ARG PHP_VERSION=8.2
-ARG ALPINE_VERSION=3.20
+ARG PHP_VERSION=8.3
+ARG ALPINE_VERSION=3.21
 # ---------------------------------------------------
 
 ### Build PHP base
-FROM php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} as base
+FROM php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} AS base
 
 ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
