@@ -19,11 +19,11 @@ ARG GPG_FINGERPRINT="2880 6A87 8AE4 23A2 8372  792E D758 99B9 A724 937A"
 # ---------------------------------------------------
 
 ### Build PHP base
-FROM bleed2002/nextcloud:php-${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} as base
+FROM bleed2002/nextcloud:php-${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} AS base
 
 ### Build Hardened Malloc
 ARG ALPINE_VERSION
-FROM docker.io/library/alpine:${ALPINE_VERSION} as build-malloc
+FROM docker.io/library/alpine:${ALPINE_VERSION} AS build-malloc
 
 ARG HARDENED_MALLOC_VERSION
 ARG CONFIG_NATIVE=false
@@ -41,7 +41,7 @@ FROM docker.io/library/nginx:${NGINX_VERSION}-alpine${ALPINE_VERSION} AS nginx
 
 
 ### Build Nextcloud (production environemnt)
-FROM base as nextcloud
+FROM base AS nextcloud
 
 COPY --from=nginx /usr/sbin/nginx /usr/sbin/nginx
 COPY --from=nginx /etc/nginx /etc/nginx
