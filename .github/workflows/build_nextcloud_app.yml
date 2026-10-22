@@ -1,45 +1,86 @@
-name: Build nextcloud app image
+name: Build Nextcloud app image
 
 # Only build manually on demand
 on:
     workflow_dispatch:
         inputs:
-            NC_VERSION:
-                description: 'The nextcloud version to build'
+            nc_major:
+                description: 'Nextcloud major version to build (uses Dockerfile.ng-v<major>)'
                 default: '31'
                 type: string
                 required: true
 
+permissions:
+    contents: read
+
+concurrency:
+    group: ${{ github.workflow }}-${{ inputs.nc_major }}
+    cancel-in-progress: false
+
 env:
-    IMAGE_NAME: bleed2002/nextcloud
-    # Which NC version should be built ?
-    NC_VERSION: ${{ github.event.inputs.NC_VERSION }}
+    IMAGE_NAME: docker.io/bleed2002/nextcloud
+    NC_MAJOR: ${{ inputs.nc_major }}
 
 jobs:
     build_nextcloud_app:
-        # The type of runner that the job will run on
         runs-on: ubuntu-latest
+        timeout-minutes: 60
 
-        # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
-            - name: "Setup: QEMU"
-              uses: docker/setup-qemu-action@v1
+            - name: Checkout
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
 
-            - name: "Setup: docker setup buildx"
-              id: buildx
-              uses: docker/setup-buildx-action@v1
+            - name: Read versions from Dockerfile
+              id: version
+              run: |
+                  set -euo pipefail
+                  if ! [[ "$NC_MAJOR" =~ ^[0-9]+$ ]]; then
+                      echo "::error::Invalid major version '$NC_MAJOR'"
+                      exit 1
+                  fi
+                  dockerfile="Dockerfile.ng-v${NC_MAJOR}"
+                  if [ ! -f "$dockerfile" ]; then
+                      echo "::error::$dockerfile not found"
+                      exit 1
+                  fi
+                  nc_version=$(sed -n 's/^ARG NEXTCLOUD_VERSION=//p' "$dockerfile")
+                  echo "dockerfile=$dockerfile" >> "$GITHUB_OUTPUT"
+                  echo "nc_version=$nc_version" >> "$GITHUB_OUTPUT"
 
-            - name: "Setup: docker login"
-              uses: docker/login-action@v1
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+            - name: Log in to Docker Hub
+              uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
               with:
                   username: ${{ secrets.DOCKER_HUB_USERNAME }}
                   password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-            # Build docker image
-            - name: "Docker: Build and push (Nextcloud ${{ env.NC_VERSION }})"
-              uses: docker/build-push-action@v2
+            - name: Docker metadata
+              id: meta
+              uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
               with:
-                  file: "Dockerfile.ng-v${{ env.NC_VERSION }}"
-                  push: true
+                  images: ${{ env.IMAGE_NAME }}
+                  flavor: latest=false
                   tags: |
-                      "bleed2002/nextcloud:ng-v${{ env.NC_VERSION }}"
+                      type=raw,value=ng-v${{ env.NC_MAJOR }}
+                      type=raw,value=ng-v${{ steps.version.outputs.nc_version }}
+                  labels: |
+                      org.opencontainers.image.version=${{ steps.version.outputs.nc_version }}
+
+            - name: Build and push (Nextcloud ${{ steps.version.outputs.nc_version }})
+              id: build
+              uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+              with:
+                  context: .
+                  file: ${{ steps.version.outputs.dockerfile }}
+                  # dockerize in the Dockerfile is amd64-only
+                  platforms: linux/amd64
+                  pull: true
+                  push: true
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+                  provenance: mode=max
+                  sbom: true

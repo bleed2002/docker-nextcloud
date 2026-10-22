@@ -1,47 +1,71 @@
-name: Build nextcloud php base image
+name: Build Nextcloud PHP base image
 
-# Only build manually on demand
+# Only build manually on demand.
+# Builds every PHP/Alpine combination listed in the matrix below.
 on:
     workflow_dispatch:
-        inputs:
-            PHP_VERSION:
-                description: 'PHP Version as used in Dockerfile.ng-php-base'
-                default: '8.3'
-                type: string
-                required: true
-            ALPINE_VERSION:
-                description: 'Alpine version as used in Dockerfile.ng-php-base'
-                default: '3.21'
-                type: string
-                required: true
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ${{ github.workflow }}
+    cancel-in-progress: false
 
 env:
-    IMAGE_NAME: bleed2002/nextcloud
-    # Change according to Dockerfile.ng-php-base
-    PHP_VERSION: ${{ github.event.inputs.PHP_VERSION }}
-    ALPINE_VERSION: ${{ github.event.inputs.ALPINE_VERSION }}
+    IMAGE_NAME: docker.io/bleed2002/nextcloud
 
 jobs:
     build_nextcloud_php_base:
+        name: PHP ${{ matrix.php }} / Alpine ${{ matrix.alpine }}
         runs-on: ubuntu-latest
+        timeout-minutes: 60
 
-        # Steps represent a sequence of tasks that will be executed as part of the job
+        strategy:
+            fail-fast: false
+            matrix:
+                # Versions to build. Add/remove entries as needed.
+                include:
+                    - php: '8.3'
+                      alpine: '3.21'
+                    - php: '8.4'
+                      alpine: '3.24'
+
         steps:
-            - name: "Setup: docker setup buildx"
-              id: buildx
-              uses: docker/setup-buildx-action@v1
+            - name: Checkout
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
 
-            - name: "Setup: docker login"
-              uses: docker/login-action@v1
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+            - name: Log in to Docker Hub
+              uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
               with:
                   username: ${{ secrets.DOCKER_HUB_USERNAME }}
                   password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-            # Build docker image
-            - name: "Docker: Build and push (php base image for latest NC)"
-              uses: docker/build-push-action@v2
+            - name: Docker metadata
+              id: meta
+              uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
               with:
+                  images: ${{ env.IMAGE_NAME }}
+                  flavor: latest=false
+                  tags: type=raw,value=php-${{ matrix.php }}-fpm-alpine${{ matrix.alpine }}
+
+            - name: Build and push (PHP ${{ matrix.php }} / Alpine ${{ matrix.alpine }})
+              uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+              with:
+                  context: .
                   file: Dockerfile.ng-php-base
+                  build-args: |
+                      PHP_VERSION=${{ matrix.php }}
+                      ALPINE_VERSION=${{ matrix.alpine }}
+                  platforms: linux/amd64
+                  pull: true
                   push: true
-                  tags:
-                      "bleed2002/nextcloud:php-${{ env.PHP_VERSION }}-fpm-alpine${{ env.ALPINE_VERSION }}"
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+                  provenance: mode=max
+                  sbom: true
