@@ -1,18 +1,17 @@
 # -------------- Build-time variables --------------
-ARG NEXTCLOUD_VERSION=31.0.5
+ARG NEXTCLOUD_VERSION=31.0.14
 ARG PHP_VERSION=8.3
-ARG NGINX_VERSION=1.26
+ARG NGINX_VERSION=1.28
 
 ARG ALPINE_VERSION=3.21
 ARG HARDENED_MALLOC_VERSION=11
 ARG SNUFFLEUPAGUS_VERSION=0.10.0
-ARG DOCKERIZE_VERSION=v0.6.1
 
 ARG UID=1000
 ARG GID=1000
 
-# nextcloud-31.0.5.tar.bz2
-ARG SHA256_SUM="2228b8f524dcd87f08a2a9281d41b04f5cb500b7624bc8c8e07b8e3039061503"
+# nextcloud-31.0.14.tar.bz2
+ARG SHA256_SUM="d0965eb2cbf68105743cbbe6eef404c89092cf92c40daee2c9cb9cf6edf63613"
 
 # Nextcloud Security <security@nextcloud.com> (D75899B9A724937A)
 ARG GPG_FINGERPRINT="2880 6A87 8AE4 23A2 8372  792E D758 99B9 A724 937A"
@@ -37,7 +36,7 @@ RUN apk --no-cache add build-base git gnupg && cd /tmp \
 
 
 ### Fetch nginx
-FROM docker.io/library/nginx:${NGINX_VERSION}-alpine AS nginx
+FROM docker.io/library/nginx:${NGINX_VERSION}-alpine${ALPINE_VERSION} AS nginx
 
 
 ### Build Nextcloud (production environemnt)
@@ -53,7 +52,6 @@ ARG GPG_FINGERPRINT
 
 ARG UID
 ARG GID
-ARG DOCKERIZE_VERSION
 
 ENV UPLOAD_MAX_SIZE=10G \
     APC_SHM_SIZE=128M \
@@ -88,10 +86,6 @@ RUN apk --no-cache add \
  && adduser -g ${GID} -u ${UID} --disabled-password --gecos "" nextcloud \
  && mkdir -p /var/log/nginx && mkdir -p /var/cache/nginx && mkdir -p /var/run/php \
  && chown -R nextcloud:nextcloud /nextcloud /var/log/nginx /var/cache/nginx /var/run/php
-
-RUN cd /tmp && wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 COPY --chown=nextcloud:nextcloud rootfs /
 
