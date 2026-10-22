@@ -32,7 +32,7 @@ jobs:
                 # Versions to build. Add/remove entries as needed.
                 include:
                     - php: '8.3'
-                      alpine: '3.21'
+                      alpine: '3.24'
                     - php: '8.4'
                       alpine: '3.24'
                     - php: '8.5'
