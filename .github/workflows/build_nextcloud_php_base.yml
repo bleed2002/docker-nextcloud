@@ -4,6 +4,11 @@ name: Build Nextcloud PHP base image
 # Builds every PHP/Alpine combination listed in the matrix below.
 on:
     workflow_dispatch:
+        inputs:
+            no_cache:
+                description: 'Build without layer cache (fresh packages and extensions)'
+                default: false
+                type: boolean
 
 permissions:
     contents: read
@@ -71,3 +76,7 @@ jobs:
                   labels: ${{ steps.meta.outputs.labels }}
                   provenance: mode=max
                   sbom: true
+                  # Layer cache in GitHub Actions cache, one scope per PHP/Alpine combination
+                  no-cache: ${{ inputs.no_cache }}
+                  cache-from: type=gha,scope=php-${{ matrix.php }}-alpine${{ matrix.alpine }}
+                  cache-to: type=gha,mode=max,scope=php-${{ matrix.php }}-alpine${{ matrix.alpine }}
