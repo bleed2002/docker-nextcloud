@@ -18,7 +18,13 @@ Images are published to Docker Hub: [`bleed2002/nextcloud`](https://hub.docker.c
 - **One Dockerfile per Nextcloud major** (`Dockerfile.ng-v<major>`), so several majors
   can be built and kept side by side (e.g. for step-by-step upgrades). Tagged
   `bleed2002/nextcloud:ng-v<major>` and `ng-v<full version>`.
-- Snuffleupagus isn't installed in the PHP base image (`PHP_HARDENING=false`); `dockerize` is included.
+- Snuffleupagus isn't installed in the PHP base image (`PHP_HARDENING=false`).
+- `run.sh` waits for the database itself (upstream logic). Images up to `ng-v30` still ship
+  `dockerize` for deployments using `command: dockerize -wait tcp://<db>:3306 ... run.sh`;
+  from `ng-v31` on it's removed, so drop that `command:` override when upgrading.
+- `rootfs/` is shared by all `Dockerfile.ng-v<major>` files, so it has to work with every
+  PHP version in use (e.g. opcache settings live in `opcache.ini`; the extension itself is
+  loaded by the PHP base image or built into PHP ≥ 8.5).
 - Extended `run.sh`: on upgrade it empties `nextcloud.log` and runs `occ upgrade`,
   `db:add-missing-*`, `db:convert-filecache-bigint`, `maintenance:repair --include-expensive`
   and `app:update --all`.

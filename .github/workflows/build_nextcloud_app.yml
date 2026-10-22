@@ -6,7 +6,7 @@ on:
         inputs:
             nc_major:
                 description: 'Nextcloud major version to build (uses Dockerfile.ng-v<major>)'
-                default: '31'
+                default: '35'
                 type: string
                 required: true
             no_cache:
@@ -80,7 +80,7 @@ jobs:
               with:
                   context: .
                   file: ${{ steps.version.outputs.dockerfile }}
-                  # dockerize in the Dockerfile is amd64-only
+                  # dockerize in Dockerfile.ng-v30 and older is amd64-only
                   platforms: linux/amd64
                   pull: true
                   push: true
