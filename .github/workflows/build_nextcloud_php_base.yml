@@ -30,6 +30,8 @@ jobs:
                       alpine: '3.21'
                     - php: '8.4'
                       alpine: '3.24'
+                    - php: '8.5'
+                      alpine: '3.24'
 
         steps:
             - name: Checkout
